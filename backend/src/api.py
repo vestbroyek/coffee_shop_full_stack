@@ -48,11 +48,10 @@ def post_drinks(payload):
         abort(400)
 
     try:
-        new_drink = Drink(title=title, recipe=json.dumps([recipe]))
+        new_drink = Drink(title=title, recipe=json.dumps(recipe))
         new_drink.insert()
 
     except Exception as e:
-        print(sys.exc_info())
         abort(500)
 
     return jsonify({"success": True, "drinks": [new_drink.long()]}), 200
@@ -70,15 +69,13 @@ def patch_drink(payload, drink_id):
     # Parse the PATCH request data
     data = request.get_json()
 
-    # Update the attributes of the existing object with the new data
-    try:
-        for key, value in data.items():
-            setattr(drink, key, value)
-    except Exception as e:
-        abort(400)
+    if "title" in data.keys():
+        drink.title = data["title"]
+    if "recipe" in data.keys():
+        drink.recipe = json.dumps(data["recipe"])
 
     try:
-        drink.update()
+        drink.insert()
     except Exception as e:
         abort(422)
 
