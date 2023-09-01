@@ -1,35 +1,63 @@
-# Coffee Shop Full Stack
+# Coffee Shop with Auth0
+## Overview
+This project is about a coffee shop where you can view different drinks available in the cafe. 
 
-## Full Stack Nano - IAM Final Project
+Just as importantly, it demonstrates the use of authentication and role-based access control (RBAC) in Flask using Auth0, with a test suite written using Postman.
 
-Udacity has decided to open a new digitally enabled cafe for students to order drinks, socialize, and study hard. But they need help setting up their menu experience.
+The backend is written in Flask and the frontend is made with Ionic.
 
-You have been called on to demonstrate your newly learned skills to create a full stack drink menu application. The application must:
+For setup instructions:
+- [View the README.md within ./backend.](./backend/README.md)
+- [View the README.md within ./frontend.](./frontend/README.md)
 
-1. Display graphics representing the ratios of ingredients in each drink.
-2. Allow public users to view drink names and graphics.
-3. Allow the shop baristas to see the recipe information.
-4. Allow the shop managers to create new drinks and edit existing drinks.
+## Walkthrough
+Once we run our backend server and frontend, we can visit `localhost:8100`. 
 
-## Tasks
+We are welcomed by a homepage listing a single and eminently low-calorie drink, water.
 
-There are `@TODO` comments throughout the project. We recommend tackling the sections in order. Start by reading the READMEs in:
+![](readme_assets/home.png)
 
-1. [`./backend/`](./backend/README.md)
-2. [`./frontend/`](./frontend/README.md)
+Note that this is the only API endpoint that is publicly available!
 
-## About the Stack
+Now, we have two roles set up: Manager and Barista. The manager is allowed to perform all actions (listing, adding, updating, and deleting drinks), whereas baristas are only allowed to list drinks (you read that right, there is no HTTP method for making coffee).
 
-We started the full stack application for you. It is designed with some key functional areas:
+Let's log in using the User menu at the bottom. This will initiate a login using Auth0. The important part is that if I log in with my user account, I will be able to assume the role of Manager (naturally, I gave myself the most powerful permissions). 
 
-### Backend
+Auth0 will return a JWT which we can decode and then parse in all of our endpoints, to check whether I have permission to perform the action. This is the job of the `@requires_permissions` decorator. 
 
-The `./backend` directory contains a partially completed Flask server with a pre-written SQLAlchemy module to simplify your data needs. You will need to complete the required endpoints, configure, and integrate Auth0 for authentication.
+This decorator helps us check whether the user is authenticated - if not, the server will return a 401. If they are authenticated but lack permissions, it returns 403. Other exception handling is done in the route definitions.
 
-[View the README.md within ./backend for more details.](./backend/README.md)
+Anyway, signing in returns this uninspiring page, which shows us that my identity was verified through Auth0. I can see the JWT I have been assigned.
 
-### Frontend
+![](readme_assets/successful_signin.png)
 
-The `./frontend` directory contains a complete Ionic frontend to consume the data from the Flask server. You will only need to update the environment variables found within (./frontend/src/environment/environment.ts) to reflect the Auth0 configuration details set up for the backend app.
+Returning to the home page, we can see it has updated. I can now create a new drink, because I am authenticated AND authorised to do so, as manager extraordinaire of this establishment:
 
-[View the README.md within ./frontend for more details.](./frontend/README.md)
+![](readme_assets/manager_home.png)
+
+Let's create a drink. We are going to create an americano. 
+
+![](readme_assets/americano.png)
+
+Once we hit save, we can see it has been added to the menu:
+
+![](readme_assets/americano_added.png)
+
+I can now also use my managerial powers to decide that I would like to delete water from the menu. We want our long-suffering customers to pay for bottled water instead.
+
+<p align="center">
+<img src="readme_assets/evil_laugh.gif" width="200" height="200"/>
+</p>
+
+Ahem. 
+
+![](readme_assets/bottled_water.png)
+
+In other words, we can GET, POST, PATCH, and DELETE, based on our neat authentication system. 
+
+## Tests
+To run the test suite, import `coffee_shop_full_stack/backend/udacity-coffee-shop.postman_collection.json`. With the server running, run the `udacity-coffee-shop` collection. 
+
+This will comprehensively test all endpoints for the public role (which can only GET `/drinks`), the barista role, and the manager role. All 20 should pass.
+
+![](readme_assets/test_results.png)
