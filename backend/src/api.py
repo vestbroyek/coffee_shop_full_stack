@@ -51,7 +51,7 @@ def post_drinks(payload):
         new_drink = Drink(title=title, recipe=json.dumps([recipe]))
         new_drink.insert()
 
-    except:
+    except Exception as e:
         print(sys.exc_info())
         abort(500)
 
@@ -74,12 +74,12 @@ def patch_drink(payload, drink_id):
     try:
         for key, value in data.items():
             setattr(drink, key, value)
-    except:
+    except Exception as e:
         abort(400)
 
     try:
         drink.update()
-    except:
+    except Exception as e:
         abort(422)
 
     return jsonify({"success": True, "drinks": [drink.long()]}), 200
@@ -96,7 +96,7 @@ def delete_drinks(payload, drink_id):
 
     try:
         drink.delete()
-    except:
+    except Exception as e:
         abort(500)
 
     return jsonify({"success": True, "delete": drink.id}), 200
@@ -105,27 +105,47 @@ def delete_drinks(payload, drink_id):
 # Error handling
 @app.errorhandler(400)
 def bad_request(error):
-    return jsonify({"success": False, "error": 400, "message": "Bad request"}), 400
+    return jsonify({
+        "success": False,
+        "error": 400,
+        "message": "Bad request"
+        }), 400
 
 
 @app.errorhandler(401)
 def bad_request(error):
-    return jsonify({"success": False, "error": 401, "message": "Unauthorised"}), 401
+    return jsonify({
+        "success": False,
+        "error": 401,
+        "message": "Unauthorised"
+        }), 401
 
 
 @app.errorhandler(403)
 def bad_request(error):
-    return jsonify({"success": False, "error": 403, "message": "Forbidden"}), 403
+    return jsonify({
+        "success": False,
+        "error": 403,
+        "message": "Forbidden"
+        }), 403
 
 
 @app.errorhandler(404)
 def not_found(error):
-    return jsonify({"success": False, "error": 404, "message": "Not found"}), 404
+    return jsonify({
+        "success": False,
+        "error": 404,
+        "message": "Not found"
+        }), 404
 
 
 @app.errorhandler(422)
 def unprocessable(error):
-    return jsonify({"success": False, "error": 422, "message": "Unprocessable"}), 422
+    return jsonify({
+        "success": False,
+        "error": 422,
+        "message": "Unprocessable"
+        }), 422
 
 
 @app.errorhandler(500)
