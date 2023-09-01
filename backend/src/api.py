@@ -23,7 +23,7 @@ def get_drinks():
     # format
     formatted_drinks = [drink.short() for drink in drinks]
 
-    return jsonify({"succes": True, "drinks": formatted_drinks}), 200
+    return jsonify({"success": True, "drinks": formatted_drinks}), 200
 
 
 @app.route("/drinks-detail")
@@ -34,7 +34,7 @@ def get_drinks_detail(payload):
     # format
     formatted_drinks = [drink.long() for drink in drinks]
 
-    return jsonify({"succes": True, "drinks": formatted_drinks}), 200
+    return jsonify({"success": True, "drinks": formatted_drinks}), 200
 
 
 @app.route("/drinks", methods=["POST"])
@@ -99,7 +99,7 @@ def delete_drinks(payload, drink_id):
     except:
         abort(500)
 
-    return jsonify({"success": True, "delete": drink.id})
+    return jsonify({"success": True, "delete": drink.id}), 200
 
 
 # Error handling
